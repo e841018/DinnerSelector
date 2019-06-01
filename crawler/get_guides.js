@@ -22,7 +22,7 @@ var collect_data = function(frame){
 		try{
 			guide.ID = item.querySelector('div > a').href.match(/contrib\/(\d*)/)[1];
 			guide.nReview = Number(item.querySelector('div > a > div.section-review-subtitle > span:nth-child(2)').textContent.match(/(\d+)/)[1]);
-			if(guide.nReview>this.thresh)
+			if(guide.nReview>arguments.callee.thresh)
 				data.push(guide);
 		}
 		catch(e){;}
