@@ -22,7 +22,7 @@ var collect_data = function(frame){
 		try{
 			guide.ID = item.querySelector('div > a').href.match(/contrib\/(\d*)/)[1];
 			guide.nReview = Number(item.querySelector('div > a > div.section-review-subtitle > span:nth-child(2)').textContent.match(/(\d+)/)[1]);
-			if(guide.nReview>arguments.callee.thresh)
+			if(guide.nReview>=arguments.callee.thresh)
 				data.push(guide);
 		}
 		catch(e){;}
@@ -35,7 +35,7 @@ var save = function(frame){
 	if(frame.childNodes[frame.childElementCount-1].className===''){
 		var data = collect_data(frame);
 		var placeName = decodeURI(window.location.href.match(/place\/(.+)\/@/)[1])
-		download(JSON.stringify(data), 'length='+String(data.length)+' place='+placeName);
+		download(JSON.stringify(data), 'length='+data.length+' place='+placeName+' thresh='+collect_data.thresh);
 	}
 }
 
