@@ -21,3 +21,7 @@ E.g. https://www.google.com/maps/place/%E5%A5%B3%E4%B9%9D%E9%A4%90%E5%BB%B3/@25.
 3. Wait until the reviews are loaded and a file (length=\<list.length> place=\<name> thresh=\<num>.json) will be saved. **Keep the browser window active.**
 
 * Only reviewers with number of reviews >= \<thresh> are fetched. It is specified in the last line: `start(<thresh>);`
+
+## Git Branch
+
+* https://hackmd.io/i0CooTWuSCi_Wc0d9wNB4A
