@@ -10,7 +10,7 @@ E.g. https://www.google.com/maps/contrib/108994155436866578572/reviews
 
 2. Paste the script into console.
 
-3. Wait until the reviews are loaded and a file (length=<list.length> guideID=<ID>) will be saved. **Keep the browser window active.**
+3. Wait until the reviews are loaded and a file (length=`<list.length>` guideID=`<ID>`) will be saved. **Keep the browser window active.**
 
 ### crawler/get_guideIDs.js
 
@@ -20,6 +20,6 @@ E.g. https://www.google.com/maps/place/%E5%A5%B3%E4%B9%9D%E9%A4%90%E5%BB%B3/@25.
 
 2. Paste the script into console.
 
-3. Wait until the reviews are loaded and a file (length=<list.length> place=<name> thresh=<num>) will be saved. **Keep the browser window active.**
+3. Wait until the reviews are loaded and a file (length=`<list.length>` place=`<name>` thresh=`<num>`) will be saved. **Keep the browser window active.**
 
-* Only reviewers with number of reviews > <thresh> are fetched. It is specified in the last line: ```start(<thresh>);```
+* Only reviewers with number of reviews >= `<thresh>` are fetched. It is specified in the last line: ```start(<thresh>);```
