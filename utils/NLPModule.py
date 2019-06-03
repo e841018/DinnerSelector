@@ -79,7 +79,7 @@ def get_text_from_json(path = '../data/example_guide.json'):
     
     texts = []
     
-    with open(path,'r') as f:
+    with open(path,'r', encoding='utf-8') as f:
         pkg = json.load(f)
     
     
