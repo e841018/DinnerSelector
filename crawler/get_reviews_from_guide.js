@@ -14,12 +14,17 @@ var collect_data = function(frame){
 	var data = [];
 	var reviewList = frame.querySelectorAll('div.section-listbox > div.section-review > div > div.section-review-content > div.section-review-line > div');
 	reviewList.forEach((item) => {
-		var review = {};
-		review.title = item.querySelector('div.section-review-titles > div > div.section-review-title > span').textContent;
-		review.address = item.querySelector('div.section-review-titles > div > div.section-review-subtitle > span').textContent;
-		review.stars = Number(item.querySelector('div:nth-child(3) > div.section-review-metadata > span.section-review-stars').getAttribute('aria-label')[1]);
-		review.content = item.querySelector('div:nth-child(3) > div.section-review-review-content > span.section-review-text').textContent;
-		data.push(review);
+		try{
+			var review = {};
+			review.place = item.querySelector('div.section-review-titles > div > div.section-review-title > span').textContent;
+			review.address = item.querySelector('div.section-review-titles > div > div.section-review-subtitle > span').textContent;
+			review.stars = Number(item.querySelector('div:nth-child(3) > div.section-review-metadata > span.section-review-stars').getAttribute('aria-label')[1]);
+			review.content = item.querySelector('div:nth-child(3) > div.section-review-review-content > span.section-review-text').textContent;
+			data.push(review);
+		}
+		catch(e){
+			console.log('Failed to fetch review:\n', e);
+		}
 	});
 	return data;
 }
@@ -29,7 +34,7 @@ var save = function(frame){
 	if(frame.children[2].className===''){
 		var data = collect_data(frame);
 		var guideID = window.location.href.match(/contrib\/(\d*)/)[1];
-		download(JSON.stringify(data), 'length='+String(data.length)+' guideID='+guideID);
+		download(JSON.stringify(data), 'reviews_guide length='+data.length+' guideID='+guideID);
 	}
 }
 
