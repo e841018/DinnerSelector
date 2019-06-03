@@ -18,20 +18,21 @@ var collect_data = function(frame){
 	var data = [];
 	var reviewList = frame.childNodes[frame.childElementCount-2].querySelectorAll('div.section-review > div > div.section-review-content > div.section-review-line > div');
 	reviewList.forEach((item) => {
-		var reviewer = {};
 		try{
-			reviewer.ID = item.querySelector('div > a').href.match(/contrib\/(\d*)/)[1];
+			var review = {reviewer:{}};
+			review.reviewer.ID = item.querySelector('div > a').href.match(/contrib\/(\d*)/)[1];
 			try{
-				reviewer.nReview = Number(item.querySelector('div > a > div.section-review-subtitle > span:nth-child(2)').textContent.match(/(\d+)/)[1]);
+				review.reviewer.nReview = Number(item.querySelector('div > a > div.section-review-subtitle > span:nth-child(2)').textContent.match(/(\d+)/)[1]);
 			}
 			catch(e){
-				reviewer.nReview = 0;
+				review.reviewer.nReview = 0;
 			}
-			if(reviewer.nReview>=arguments.callee.thresh)
-				data.push(reviewer);
+			review.stars = Number(item.querySelector('div:nth-child(3) > div.section-review-metadata > span.section-review-stars').getAttribute('aria-label')[1]);
+			review.content = item.querySelector('div:nth-child(3) > div.section-review-review-content > span.section-review-text').textContent;
+			data.push(review);
 		}
 		catch(e){
-			console.log('Failed to fetch reviewer:\n', e);
+			console.log('Failed to fetch review:\n', e);
 		}
 	});
 	return data;
@@ -42,7 +43,7 @@ var save = function(frame){
 	if(frame.childNodes[frame.childElementCount-1].className===''){
 		var data = collect_data(frame);
 		var place = decodeURI(window.location.href.match(/place\/(.+)\/@/)[1])
-		download(JSON.stringify(data), 'local_guides length='+data.length+' place='+place+' thresh='+collect_data.thresh);
+		download(JSON.stringify(data), 'reviews_place length='+data.length+' place='+place);
 	}
 }
 
@@ -55,8 +56,7 @@ var scrollToButtom = function(){
 };
 
 // add listener and start by an initial scrollToButtom()
-var start = async function(thresh){
-	collect_data.thresh = thresh; // store thresh attribute in function object
+var start = async function(){
 	document.querySelector('#pane > div > div.widget-pane-content.scrollable-y > div > div > div.section-listbox.section-listbox-space-between.section-listbox-vertically-center-content.section-listbox-flex-vertical.section-listbox-flex-horizontal > div:nth-child(2) > div > button').click();
 	var frame_selector = '#pane > div > div.widget-pane-content.scrollable-y > div > div > div.section-listbox.section-scrollbox.scrollable-y.scrollable-show';
 	while(document.querySelector(frame_selector)===null)
@@ -67,4 +67,4 @@ var start = async function(thresh){
 	scrollToButtom.call(reviews);
 };
 
-start(100);
+start();
