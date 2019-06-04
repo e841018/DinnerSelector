@@ -3,6 +3,7 @@ import json
 import re
 import glob
 import os
+import numpy as np
 import word2vec
 
 class CorpusGenerator():
@@ -60,26 +61,54 @@ class CorpusGenerator():
                 reviews_terms.append(terms)
         return reviews_terms
     
-    def gen(self):
+    def gen(self, corpus_path='../data/corpus.txt'):
         """ Save corpus to file """
-        with open('../data/corpus.txt', 'w') as f:
+        with open(corpus_path, 'w') as f:
             for fn in self.filenames:
                 # [['第一', '間', '店', '的', '評論'], ['第二', '間', '店', '的', '評論'], ...]
                 reviews_terms = self.get_review_content(fn)
 
                 for terms in reviews_terms:
                     f.write(' '.join(terms) + '\n')
+class Word2Vec():
+    """
+        @gen_corpus: Generate new corpus from dataset in `data_folder`
+        @train: Training a new word2vec model
+    """
+    def __init__(self, gen_corpus=False, train=False, corpus_path='../data/corpus.txt',
+            data_folder='../data/reviews_by_guide/', vec_dim=300, min_count=3):
+        # generate corpus file
+        self.cg = CorpusGenerator(review_folder=data_folder)
+        if gen_corpus:
+            self.cg.gen(corpus_path=corpus_path)
+
+        # Train a model to generate embedding(vector) for each vocab
+        # A vocab is a word that appears > min_count times in the corpus
+        if train:
+            word2vec.word2vec(corpus_path,
+                '../model/corpusWord2Vec.bin', size=vec_dim, min_count=min_count, verbose=True)
+        self.model = word2vec.load('../model/corpusWord2Vec.bin')
+
+    def get_relevant_words(self, query_word):
+        indices, metrices = self.model.similar(query_word)
+        vocabs = [self.model.vocab[i] for i in indices]
+        return vocabs, metrices
+
+    def get_word_vector(self, query_word):
+        index = np.where(self.model.vocab == query_word)[0]
+        if len(index) == 0:
+            print('[KeyError] Can\'t recognize the query_word')
+            return None
+        return self.model.vectors[index[0]]
 
 if __name__ == "__main__":
-    # generate corpus
-    corpus_gen = CorpusGenerator()
-    corpus_gen.gen()
 
-    # word2vec model
-    word2vec.word2vec('../data/corpus.txt',
-        '../model/corpusWord2Vec.bin', size=300, min_count=3, verbose=True)
-    model = word2vec.load('../model/corpusWord2Vec.bin')
+    # sample code to get similar words
+    w2v = Word2Vec()
+    words, metrices = w2v.get_relevant_words(u'飲料')
+    for w, mt in zip(words, metrices):
+        print(w, mt)
 
-    indices, metrices = model.similar(u'飲料')
-    for index, mt in zip(indices, metrices):
-        print(model.vocab[index], mt)
+    # sample code to acquire word embedding
+    drinks_vec = w2v.get_word_vector(u'飲料')
+    print('飲料\'s vector dim1~10: ', drinks_vec[:10])
