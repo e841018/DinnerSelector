@@ -34,7 +34,7 @@ var save = function(frame){
 	if(frame.children[2].className===''){
 		var data = collect_data(frame);
 		var guideID = window.location.href.match(/contrib\/(\d*)/)[1];
-		download(JSON.stringify(data), 'reviews_guide length='+data.length+' guideID='+guideID);
+		download(JSON.stringify(data), 'reviews_guide length='+data.length+' guideID='+guideID+'.json');
 	}
 }
 

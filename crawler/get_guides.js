@@ -42,7 +42,7 @@ var save = function(frame){
 	if(frame.childNodes[frame.childElementCount-1].className===''){
 		var data = collect_data(frame);
 		var place = decodeURI(window.location.href.match(/place\/(.+)\/@/)[1])
-		download(JSON.stringify(data), 'local_guides length='+data.length+' place='+place+' thresh='+collect_data.thresh);
+		download(JSON.stringify(data), 'local_guides length='+data.length+' place='+place+' thresh='+collect_data.thresh+'.json');
 	}
 }
 

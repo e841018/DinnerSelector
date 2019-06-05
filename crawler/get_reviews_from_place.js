@@ -42,8 +42,9 @@ var collect_data = function(frame){
 var save = function(frame){
 	if(frame.childNodes[frame.childElementCount-1].className===''){
 		var data = collect_data(frame);
-		var place = decodeURI(window.location.href.match(/place\/(.+)\/@/)[1])
-		download(JSON.stringify(data), 'reviews_place length='+data.length+' place='+place);
+		var place = decodeURI(window.location.href.match(/place\/(.+)\/@/)[1]);
+		var coord = decodeURI(window.location.href.match(/@(.+z)/)[1]);
+		download(JSON.stringify(data), 'reviews_place length='+data.length+' place='+place+' coord='+coord+'.json');
 	}
 }
 
