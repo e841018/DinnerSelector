@@ -31,11 +31,14 @@ var collect_data = function(frame){
 
 // download collected data if finished loading
 var save = function(frame){
-	if(frame.children[2].className===''){
-		var data = collect_data(frame);
-		var guideID = window.location.href.match(/contrib\/(\d*)/)[1];
-		download(JSON.stringify(data), 'reviews_guide length='+data.length+' guideID='+guideID+'.json');
-	}
+	console.log('save(frame) called')
+	if(frame.children[2].className!=='')
+		return;
+	var data = collect_data(frame);
+	var guideID = window.location.href.match(/contrib\/(\d*)/)[1];
+	download(JSON.stringify(data), 'reviews_guide length='+data.length+' guideID='+guideID+'.json');
+	if(window.closeTab)
+		window.closeTab();
 }
 
 // scroll to buttom and call save() 1 second later
@@ -44,6 +47,7 @@ var scrollToButtom = function(){
 	frame.scroll(0, frame.scrollHeight);
 	clearTimeout(this.timerID);
 	this.timerID = setTimeout(save, 1000, frame);
+	console.log('call save(frame) 1 sec later');
 };
 
 // add listener and start by an initial scrollToButtom()
