@@ -57,5 +57,11 @@ data structure of `local_guides length=<list.length> place=<name> thresh=<num>.j
 ]
 ```
 
+### crawler/get_reviews_from_place.js
+1. Install `Node.js` and `Puppeteer`
+2. `node auto_crawl.js`
+3. Try to keep all the tabs active
+4. Change the index of the for loop in line 10 and repeat
+
 ## Git Branch
 * https://hackmd.io/i0CooTWuSCi_Wc0d9wNB4A
