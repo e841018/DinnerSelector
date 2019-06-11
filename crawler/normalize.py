@@ -3,7 +3,7 @@ import json
 import os
 from os import listdir
 
-data_path = 'reviews_guide'
+data_path = '../data/reviews_guide'
 guides_list = []
 place_list = []
 

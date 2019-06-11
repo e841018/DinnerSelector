@@ -7,7 +7,7 @@ import numpy as np
 import word2vec
 
 class CorpusGenerator():
-    def __init__(self, review_folder='../data/reviews_by_guide/'):
+    def __init__(self, review_folder='../data/reviews_guide/'):
         self.EMOJI_RE = re.compile(u'['
             u'\U0001F300-\U0001F64F'
             u'\U0001F680-\U0001F6FF'
@@ -76,7 +76,7 @@ class Word2Vec():
         @train: Training a new word2vec model
     """
     def __init__(self, gen_corpus=False, train=False, corpus_path='../data/corpus.txt',
-            data_folder='../data/reviews_by_guide/', vec_dim=300, min_count=3):
+            data_folder='../data/reviews_guide/', vec_dim=300, min_count=3):
         # generate corpus file
         self.cg = CorpusGenerator(review_folder=data_folder)
         if gen_corpus:

@@ -3,7 +3,7 @@ import os
 from os import listdir
 
 
-data_path = 'reviews_guide'
+data_path = '../data/reviews_guide'
 
 guides_list = listdir(data_path)
 place_list = {} 

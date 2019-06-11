@@ -3,7 +3,7 @@ import os
 from os import listdir
 
 
-data_path = 'local_guides'
+data_path = '../data/local_guides'
 
 place_list = listdir(data_path)
 guides_list = {} #id:num
