@@ -2,8 +2,6 @@ import numpy as np
 import json
 import os
 from os import listdir
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.pyplot as plt
 
 data_path = '../data/reviews_guide'
 
@@ -54,21 +52,3 @@ np.save('guides_normalized.npy', guides_normalized)
 np.save('singular_values.npy', s)
 np.save('proj.npy', proj)
 np.save('guides_latent.npy', guides_latent)
-
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-n = len(guide_list)
-xs = guides_latent[0,:]
-ys = guides_latent[1,:]
-zs = guides_latent[2,:]
-ax.scatter(xs, ys, zs, marker='^')
-ax.set_xlabel('X Label')
-ax.set_ylabel('Y Label')
-ax.set_zlabel('Z Label')
-plt.show()
-
-'wait'
-
-
-
-
