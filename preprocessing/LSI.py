@@ -101,5 +101,6 @@ def example_get_latent():
 	return lc.get_latent(proj, '../data/reviews_guide/reviews_guide length=117 guideID=107297262039687837164.json')
 
 def example_visualize():
+	# visualize the 0th, 1st, and 5th latent dimension
 	lc.visualize(np.load('guides_latent.npy'), dims=(0,1,5))
 	
