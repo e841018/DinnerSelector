@@ -38,8 +38,9 @@ def evaluate(datas,predicts,centers):
     return tf.reduce_mean(k_dist).numpy()
 
 def Kmeans(datas,k,epoch=10):
-    dim = datas.shape[1]
-    center_idx = tf.random.uniform([k],minval=0,maxval=32,dtype=tf.int32)
+    
+    N,dim = datas.shape
+    center_idx = tf.random.uniform([k],minval=0,maxval=N-1,dtype=tf.int32)
     centers = tf.gather(datas,center_idx)
     
     for i in range(epoch):
@@ -59,17 +60,19 @@ def Kmeans(datas,k,epoch=10):
             cx = tf.squeeze(cx)
             cy = tf.squeeze(cy)
             plt.plot(cx,cy,'k+',markersize=12)
-            plt.text(x=0,y=40,s='avg dist = '+str(loss))
+            plt.title('avg dist = '+str(loss))
             
+
     return predicts
 
-def KNN(target,datas,k,predicts):
+def KNN(target,datas,k,clusters):
     if len(target.shape) < 2:
         target = tf.expand_dims(target,0)
     
     dim = target.shape[-1]
     distances = tf.squeeze(distance(target,datas))
     k_nearest = tf.argsort(distances)[0:k]
+    predicts = tf.gather(clusters,k_nearest) 
     
     if dim == 2 :
         x,y = tf.split(datas,2,1)
@@ -77,10 +80,9 @@ def KNN(target,datas,k,predicts):
         y = tf.squeeze(y)
         colors = ['red','green','blue','yellow','purple','pink', "orange","gold", "limegreen"]
         fig = plt.figure()
-        plt.scatter(x, y, c=predicts, cmap=matplotlib.colors.ListedColormap(colors))
-        
+        plt.scatter(x, y, c=clusters, cmap=matplotlib.colors.ListedColormap(colors))
+                   
         nd = tf.gather(datas,k_nearest)
-        
         nx = tf.gather(nd,0,axis=1)
         ny = tf.gather(nd,1,axis=1)
         plt.plot(nx,ny,'k4',markersize=14)
@@ -88,8 +90,9 @@ def KNN(target,datas,k,predicts):
         tx = tf.gather(target,0,axis=1)
         ty = tf.gather(target,1,axis=1)
         plt.plot(tx,ty,'k*',markersize=12)
+        plt.title(str(predicts.numpy()))
     
-    return tf.gather(predicts,k_nearest)
+    return predicts
 
 
 if __name__ == '__main__':
