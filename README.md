@@ -28,10 +28,10 @@ data structure of `reviews_guide length=<list.length> guideID=<ID>.json`:
 ```
 [
     {
-        "place": "創義面",
-        "address": "10462, Taipei City, Zhongshan District, Lane 46, Dazhi Street, 34號",
-        "stars": 3,
-        "content": "一般般吧 價格跟份量還行而已"
+        "place": "高和食堂",
+        "address": "106台北市大安區和平東路二段118巷60號",
+        "stars": 2,
+        "content": "價格小貴，份量偏少，口味一般。"
     },
     ...
 ]
