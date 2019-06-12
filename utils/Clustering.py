@@ -61,7 +61,7 @@ def Kmeans(datas,k,epoch=10):
             cy = tf.squeeze(cy)
             plt.plot(cx,cy,'k+',markersize=12)
             plt.title('avg dist = '+str(loss))
-            
+            plt.show()
 
     return predicts
 
