@@ -46,6 +46,11 @@ class LatentConverter():
 		u, s, vh = np.linalg.svd(guides_normalized)
 		print('gen_proj: The first', latent_dim, 'latent dimensions are taken.')
 		print('Singular values:\n', s)
+		# guides_smoothed = np.matmul(np.matmul(u[:,:20], np.diag(s[:20])), vh[:20,:])
+		# print('Smoothed:\n', guides_smoothed)
+		# # for debug use
+		# guides_normalized = guides_normalized.transpose()
+		# guides_smoothed = guides_smoothed.transpose()
 		return u[:,:latent_dim].transpose()
 
 	def get_latent(self, proj, reviewer_path):
@@ -64,13 +69,6 @@ class LatentConverter():
 		plt.show()
 
 if __name__ == '__main__':
-	
-	# lc = LatentConverter('places.txt')
-	# lc.visualize(np.load('guides_latent.npy'), dims=(0,1,2))
-
-	# guides_latent = np.load('guides_latent.npy').transpose()[:,:2]
-	# from Clustering import Kmeans
-	# predict = Kmeans(guides_latent, k=5)
 
 	# initialize with a list of places
 	lc = LatentConverter('places.txt')
@@ -112,5 +110,5 @@ def example_visualize():
 	# initialize with a list of places
 	lc = LatentConverter('places.txt')
 	# visualize the 0th, 1st, and 5th latent dimension
-	lc.visualize(np.load('guides_latent.npy'), dims=(0,1,5))
+	lc.visualize(np.load('guides_latent.npy'), dims=(0,1,2))
 	
