@@ -7,7 +7,7 @@ data_path = '../data/reviews_guide'
 guides_list = listdir(data_path)
 place_list = {} 
 valid_list = []
-threshold = 0 #6
+threshold = 10 #6
 for guide in guides_list:
     
     f = open(os.path.join(data_path, guide), encoding='utf-8')

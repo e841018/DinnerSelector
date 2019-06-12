@@ -64,6 +64,14 @@ class LatentConverter():
 		plt.show()
 
 if __name__ == '__main__':
+	
+	# lc = LatentConverter('places.txt')
+	# lc.visualize(np.load('guides_latent.npy'), dims=(0,1,2))
+
+	# guides_latent = np.load('guides_latent.npy').transpose()[:,:2]
+	# from Clustering import Kmeans
+	# predict = Kmeans(guides_latent, k=5)
+
 	# initialize with a list of places
 	lc = LatentConverter('places.txt')
 
@@ -101,6 +109,8 @@ def example_get_latent():
 	return lc.get_latent(proj, '../data/reviews_guide/reviews_guide length=117 guideID=107297262039687837164.json')
 
 def example_visualize():
+	# initialize with a list of places
+	lc = LatentConverter('places.txt')
 	# visualize the 0th, 1st, and 5th latent dimension
 	lc.visualize(np.load('guides_latent.npy'), dims=(0,1,5))
 	
