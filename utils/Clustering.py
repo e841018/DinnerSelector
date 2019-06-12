@@ -92,7 +92,7 @@ def KNN(target,datas,k,clusters):
         plt.plot(tx,ty,'k*',markersize=12)
         plt.title(str(predicts.numpy()))
     
-    return predicts
+    return predicts,k_nearest
 
 
 if __name__ == '__main__':
