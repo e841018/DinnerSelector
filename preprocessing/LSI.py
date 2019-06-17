@@ -1,7 +1,6 @@
 import numpy as np
 import json
 import os
-from os import listdir
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -69,28 +68,45 @@ class LatentConverter():
 		ax.set_zlabel('Z')
 		plt.show()
 
+class ReviewReader():
+
+	def __init__(self, guides_path, reviews_path):
+		self.reviews_path = reviews_path
+		# guide_list[<number>] = <guide ID>
+		guide_list = []
+		with open(guides_path, encoding='utf-8') as f:
+			for i in f:
+				guide_list.append(i[:-1])
+		self.guide_len = len(guide_list)
+		# guide_file_dict[<guide ID>] = <file name>
+		guide_file_dict = {}
+		for i in os.listdir(reviews_path):
+			guide_file_dict[i.split()[2].split('=')[1].split('.')[0]] = i
+		# file_mame[<number>] = <file name>
+		file_mame = []
+		for num in range(len(guide_list)):
+			file_mame.append(guide_file_dict[guide_list[num]])
+		self.file_name = file_mame
+
+	def getPath(self, guideNum):
+		return os.path.join(self.reviews_path, self.file_name[guideNum])
+
+	def getReviews(self, guideNum):
+		with open(self.getPath(guideNum), encoding='utf-8') as f:
+			review_list = json.load(f)
+		return review_list
+		
+
 if __name__ == '__main__':
 
 	# initialize with a list of places
 	lc = LatentConverter('places.txt')
-
-	# list of guides
-	guide_list = []
-	with open('guides.txt', encoding='utf-8') as f:
-		for i in f:
-			guide_list.append(i[:-1])
-
-	# guide_file_dict[(name, address)] = file_name
-	data_path = '../data/reviews_guide'
-	guide_file_dict = {}
-	for i in listdir(data_path):
-		guide_file_dict[i.split()[2].split('=')[1].split('.')[0]] = i
-
+	# get reviews
+	rr = ReviewReader('guides.txt', '../data/reviews_guide')
 	# generate all normalized vectors
-	guides_normalized = np.zeros((lc.place_len, len(guide_list)))
-	for g_idx, guide in enumerate(guide_list):
-		guide_path = os.path.join(data_path, guide_file_dict[guide])
-		guides_normalized[:,g_idx] = lc.get_normalized(guide_path)
+	guides_normalized = np.zeros((lc.place_len, rr.guide_len))
+	for g_idx in range(rr.guide_len):
+		guides_normalized[:,g_idx] = lc.get_normalized(rr.getPath(g_idx))
 	# generate projection matrix
 	proj = lc.gen_proj(guides_normalized, latent_dim=20)
 	# project guides
