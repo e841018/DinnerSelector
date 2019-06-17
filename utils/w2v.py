@@ -52,21 +52,24 @@ class CorpusGenerator():
             pkg = json.load(f)
 
         reviews_terms = []
+        reviews_places = []
         for review in pkg:
             content = self.clean(review['content'])
+            place = review['place']
             terms = list(jieba.cut(content))
             terms = self.remove_stop_words(terms)
 
             if len(terms) > 0:
                 reviews_terms.append(terms)
-        return reviews_terms
+                reviews_places.append(place)
+        return reviews_terms,reviews_places
     
     def gen(self, corpus_path='../data/corpus.txt'):
         """ Save corpus to file """
         with open(corpus_path, 'w') as f:
             for fn in self.filenames:
                 # [['第一', '間', '店', '的', '評論'], ['第二', '間', '店', '的', '評論'], ...]
-                reviews_terms = self.get_review_content(fn)
+                reviews_terms,_ = self.get_review_content(fn)
 
                 for terms in reviews_terms:
                     f.write(' '.join(terms) + '\n')
