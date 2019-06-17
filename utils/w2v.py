@@ -64,6 +64,21 @@ class CorpusGenerator():
                 reviews_places.append(place)
         return reviews_terms,reviews_places
     
+    def get_placeReview_content(self,filename):
+        with open(filename, 'r') as f:
+            pkg = json.load(f)
+
+        reviews_terms = []
+        for review in pkg:
+            content = self.clean(review['content'])
+            terms = list(jieba.cut(content))
+            terms = self.remove_stop_words(terms)
+
+            if len(terms) > 0:
+                reviews_terms.append(terms)
+        return reviews_terms
+    
+    
     def gen(self, corpus_path='../data/corpus.txt'):
         """ Save corpus to file """
         with open(corpus_path, 'w') as f:

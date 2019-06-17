@@ -15,10 +15,14 @@ from os import listdir
 from os.path import isfile, join
 
 
+
 places_dict = dict()
 inv_list = dict()
 
 review_path = '../data/reviews_guide/'
+
+negative_words = ['不涼','沒','沒有','不','不太','很不']
+
 
 cg = CorpusGenerator()
 
@@ -34,11 +38,32 @@ for file in files:
         if place not in places_dict:
             places_dict[place] = dict()
         
-        for term in review:
+        for i,term in enumerate(review):
             
             # init term in inv_list
             if term not in inv_list:
                 inv_list[term] = list()
+            
+            # 此字是否為負面詞意?
+            if term in negative_words:
+                
+                pre_term = 'XX'
+                post_term = 'XX'
+                
+                # 扣分
+                if i>0:
+                    # 前字
+                    pre_term = review[i-1]
+                    places_dict[place][pre_term]-=2
+                    
+                if i<len(review)-1:
+                    # 後字
+                    post_term = review[i+1]
+                    if post_term not in places_dict[place]:
+                        places_dict[place][post_term]=0
+                    places_dict[place][post_term]-=2
+                    
+                print(pre_term+term+post_term)
             
             # processing places_dict
             if term not in places_dict[place]:
