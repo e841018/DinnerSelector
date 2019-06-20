@@ -16,7 +16,7 @@ function resolveAfter(t){
 // collect data
 var collect_data = function(frame){
 	var data = [];
-	var reviewList = frame.childNodes[frame.childElementCount-2].querySelectorAll('div.section-review > div > div.section-review-content > div.section-review-line > div');
+	var reviewList = frame.childNodes[frame.childElementCount-2].querySelectorAll('div.section-review > div > div.section-review-content');
 	reviewList.forEach((item) => {
 		try{
 			var review = {reviewer:{}};
@@ -42,8 +42,8 @@ var collect_data = function(frame){
 var save = function(frame){
 	if(frame.childNodes[frame.childElementCount-1].className===''){
 		var data = collect_data(frame);
-		var place = decodeURI(window.location.href.match(/place\/(.+)\/@/)[1]);
-		var coord = decodeURI(window.location.href.match(/@(.+z)/)[1]);
+		var place = decodeURI(window.location.href.match(/place\/([^\/]+)/)[1]);
+		var coord = decodeURI(window.location.href.match(/@([^z]+z)/)[1]);
 		download(JSON.stringify(data), 'reviews_place length='+data.length+' place='+place+' coord='+coord+'.json');
 	}
 }
