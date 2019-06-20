@@ -36,7 +36,7 @@ class CorpusGenerator():
         jieba.set_dictionary('../data/jieba_dict/dict.txt.big')
 
     def clean(self, content):
-        # remove non-Chinese, non-Engilsh and emoji 
+        # remove non-Chinese, non-Engilsh and emoji
         content = re.sub(u'[^\u4e00-\u9fff^\w]', '', content)
         return self.EMOJI_RE.sub('', content)
 
@@ -62,7 +62,7 @@ class CorpusGenerator():
             if len(terms) > 0:
                 reviews_terms.append(terms)
                 reviews_places.append(place)
-        return reviews_terms,reviews_places
+        return reviews_terms, reviews_places
     
     def get_placeReview_content(self,filename):
         with open(filename, 'r') as f:
@@ -84,7 +84,7 @@ class CorpusGenerator():
         with open(corpus_path, 'w') as f:
             for fn in self.filenames:
                 # [['第一', '間', '店', '的', '評論'], ['第二', '間', '店', '的', '評論'], ...]
-                reviews_terms,_ = self.get_review_content(fn)
+                reviews_terms, _ = self.get_review_content(fn)
 
                 for terms in reviews_terms:
                     f.write(' '.join(terms) + '\n')
@@ -119,11 +119,20 @@ class Word2Vec():
             return None
         return self.model.vectors[index[0]]
 
+import argparse
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-t', action='store_true', dest='train', default=False)
+    parser.add_argument('-g', action='store_true', dest='gen', default=False)
+    parser.add_argument('-p', action='store', dest='corpus_p', default='../data/corpus.txt')
+    args = parser.parse_args()
+
 
     # sample code to get similar words
-    w2v = Word2Vec()
-    words, metrices = w2v.get_relevant_words(u'飲料')
+    w2v = Word2Vec(gen_corpus=args.gen, train=args.train, corpus_path=args.corpus_p, vec_dim=200)
+    words, metrices = w2v.get_relevant_words(u'火鍋')
+    print('\n')
     for w, mt in zip(words, metrices):
         print(w, mt)
 
