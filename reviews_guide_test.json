@@ -1,8 +1,9 @@
 [
     {"place":"小川拉麵","address":"106台北市大安區復興南路二段190號","stars":5,"content":""},
-    {"place":"一品日式拉麵專門店","address":"106台北市大安區和平東路二段118巷36號","stars":5,"content":""},
-    {"place":"胖老爹美式炸雞大安店","address":"106台北市大安區大安路二段70號","stars":5,"content":""},
-    {"place":"雞二拉麵","address":"106台北市大安區文昌街30號","stars":5,"content":"CP值高 湯濃麵硬 份量大超適合大食怪♡"},
-    {"place":"七里亭","address":"106台北市大安區羅斯福路三段333巷8號","stars":1,"content":""},
-    {"place":"巧味快餐","address":"106台北市大安區和平東路二段118巷43號","stars":1,"content":""}
+    {"place":"雞二拉麵","address":"106台北市大安區文昌街30號","stars":5,"content":""},
+    {"place":"滇味小廚","address":"106台北市大安區復興南路二段340巷5號","stars":5,"content":""},
+    {"place":"胖老爹美式炸雞大安店","address":"106台北市大安區大安路二段70號","stars":4,"content":""},
+    {"place":"一品日式拉麵專門店","address":"106台北市大安區和平東路二段118巷36號","stars":3,"content":""},
+    {"place":"巧味快餐","address":"106台北市大安區和平東路二段118巷43號","stars":1,"content":""},
+    {"place":"炒飯仙人","address":"106台北市大安區和平東路二段118巷54弄6號","stars":1,"content":""}
 ]

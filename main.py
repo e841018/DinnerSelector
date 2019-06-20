@@ -16,7 +16,7 @@ query = lc.get_latent(proj, 'reviews_guide_test.json')
 # LatentConverter.visualize(np.load('preprocessing/proj.npy'), dims=(0,1,2))
 
 # get the nearest guides to the query
-k_km = 1
+k_km = 10
 k_knn = 20
 guides_latent = np.load('preprocessing/guides_latent.npy').transpose()
 clusters = Kmeans(guides_latent, k_km)
@@ -28,14 +28,15 @@ rr = ReviewReader('preprocessing/guides.txt', 'data/reviews_guide')
 place_dict = {}
 for num in k_nearest:
 	for review in rr.getReviews(num):
-		place = (review['place'], review['address'])
-		if place not in place_dict:
-			place_dict[place] = 1
-		else:
-			place_dict[place] += 1
+		if review['stars']>3:
+			place = (review['place'], review['address'])
+			if place not in place_dict:
+				place_dict[place] = 1
+			else:
+				place_dict[place] += 1
 
 # collect places and sort
-thresh = 4
+thresh = 3
 place_list = [place for place in place_dict.items() if place[1]>thresh]
 place_list.sort(key=lambda d: d[1], reverse = True)
 
