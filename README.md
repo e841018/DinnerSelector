@@ -72,12 +72,13 @@ data structure of `reviews_place length=<list.length> place=<name>.json`:
 ### preprocessing/select_places.py
 1. Collect reviews of the guides in `guides.txt` with `crawler/get_reviews_from_guide.js` and save them in `data/reviews_guide`.
 2. Run.
-3. `places.txt` will be generated, containing places reviewed by over `6` (now `10`) guides in `guides.txt`.
+3. `places.json` will be generated, containing places reviewed by over `10` guides in `guides.txt`.
 
 ### preprocessing/LSI.py
 1. Run. It may take some time if `len(places)` is large. 12000 places takes about 1 minute for X280, mainly spent on SVD.
-2. Projection matrix `proj.npy` will be generated. Refer to `example_get_latent()` for usage.
-3. `guides_latent.npy` will be generated. The columns of the matrix are guide vectors. Refer to `example_visualize()` for usage.
+2. `guides_normalized.npy` will be generated. The columns include normalized number of stars reviewed from guides.
+3. Projection matrix `proj.npy` will be generated. Refer to `example_get_latent()` for usage.
+4. `guides_latent.npy` will be generated. The columns are guide vectors. Refer to `example_visualize()` for usage.
 
 ## Git Branch
 * https://hackmd.io/i0CooTWuSCi_Wc0d9wNB4A

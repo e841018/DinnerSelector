@@ -8,13 +8,16 @@ class LatentConverter():
 
 	def __init__(self, places_path):
 		place_list = []
+		place2idx = {}
 		with open(places_path, encoding='utf-8') as f:
-			for place in f:
-				place_list.append(tuple(place[:-1].split(',')))
+			for p_idx, place in enumerate(json.load(f)):
+				place = tuple(place)
+				place2idx[place] = p_idx
+				place_list.append(place)
 		self.places_path = places_path
-		self.place_list = place_list
-		self.place_set = set(place_list)
 		self.place_len = len(place_list)
+		self.place_list = place_list
+		self.place2idx = place2idx
 
 	def get_normalized(self, reviewer_path):
 		with open(reviewer_path, encoding='utf-8') as f:
@@ -23,7 +26,7 @@ class LatentConverter():
 		stars_dict = {}
 		for review in review_list:
 			place = (review['place'], review['address'])
-			if place in self.place_set:
+			if place in self.place2idx:
 				stars_dict[place] = review['stars']
 		if len(stars_dict)==0:
 			print('Reviewer "' + reviewer_path + '":\n\tNone of the reviews overlaps with "' + self.places_path + '"')
@@ -100,7 +103,7 @@ class ReviewReader():
 if __name__ == '__main__':
 
 	# initialize with a list of places
-	lc = LatentConverter('places.txt')
+	lc = LatentConverter('places.json')
 	# get reviews
 	rr = ReviewReader('guides.txt', '../data/reviews_guide')
 	# generate all normalized vectors
@@ -112,12 +115,13 @@ if __name__ == '__main__':
 	# project guides
 	guides_latent = np.matmul(proj, guides_normalized)
 	# save for future use
+	np.save('guides_normalized.npy', guides_normalized)
 	np.save('proj.npy', proj)
 	np.save('guides_latent.npy', guides_latent)
 
 def example_get_latent():
 	# initialize with a list of places
-	lc = LatentConverter('places.txt')
+	lc = LatentConverter('places.json')
 	# load projection matrix
 	proj = np.load('proj.npy')
 	# get latent vector

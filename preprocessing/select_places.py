@@ -28,8 +28,7 @@ for place in place_list:
     if place[1] > threshold:
         # judge = input(place[0])
     # if judge == '\'':
-        valid_list.append(place)
+        valid_list.append(place[0])
 
-with open('places.txt', 'w', encoding='utf-8') as f:
-    for i in valid_list:
-        f.write(i[0][0] + ',' + i[0][1] + '\n')
+with open('places.json', 'w', encoding='utf-8') as f:
+    json.dump(valid_list, f, ensure_ascii=False)
