@@ -74,7 +74,7 @@ class CorpusGenerator():
         for review in pkg:
             content = self.clean(review['content'])
             terms = list(jieba.cut(content))
-            terms = self.remove_stop_words(terms)
+            self.remove_stop_words(terms)
 
             if len(terms) > 0:
                 reviews_terms.append(terms)
