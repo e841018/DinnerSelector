@@ -42,11 +42,9 @@ class CorpusGenerator():
         return self.EMOJI_RE.sub('', content)
 
     def remove_stop_words(self, terms):
-        new_terms = [t for t in terms]
         for t in terms:
             if t in self.stopwords:
                 terms.remove(t)
-        #return new_terms
 
     def get_review_content(self, filename):
         with open(filename, 'r') as f:
@@ -74,7 +72,7 @@ class CorpusGenerator():
         for review in pkg:
             content = self.clean(review['content'])
             terms = list(jieba.cut(content))
-            terms = self.remove_stop_words(terms)
+            self.remove_stop_words(terms)
 
             if len(terms) > 0:
                 reviews_terms.append(terms)
@@ -108,12 +106,12 @@ class Word2Vec():
             logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
             sentences = word2vec.LineSentence(corpus_path)
             model = word2vec.Word2Vec(sentences, sg=1, size=vec_dim, min_count=min_count)
-            model.save('../model/w2v_wiki.model')    
+            model.save('../model/w2v.model')    
             
             # word2vec.word2vec(corpus_path,
             #     '../model/corpusWord2Vec.bin', size=vec_dim, min_count=min_count, verbose=True)
         
-        self.model = word2vec.Word2Vec.load('../model/w2v_wiki.model')
+        self.model = word2vec.Word2Vec.load('../model/w2v.model')
         # self.model = word2vec.load('../model/corpusWord2Vec.bin')
 
     def get_relevant_words(self, query_word):
@@ -135,14 +133,16 @@ if __name__ == "__main__":
     parser.add_argument('-p', action='store', dest='corpus_p', default='../data/corpus.txt')
     args = parser.parse_args()
 
-
     # sample code to get similar words
     w2v = Word2Vec(gen_corpus=args.gen, train=args.train, corpus_path=args.corpus_p, vec_dim=250)
-    words, metrices = w2v.get_relevant_words(u'火鍋')
-    print('\n')
-    for w, mt in zip(words, metrices):
-        print(w, mt)
+    keywords = ['衛生', '飲料', '服務', 'cp', '熱']
+    for kwd in keywords:
+        print('Processing {}'.format(kwd))
+        results = w2v.get_relevant_words(kwd)
+        print('\n')
+        for w, mt in results:
+            print(w, mt)
 
     # sample code to acquire word embedding
-    drinks_vec = w2v.get_word_vector(u'飲料')
+    drinks_vec = w2v.get_word_vector('飲料')
     print('飲料\'s vector dim1~10: ', drinks_vec[:10])
