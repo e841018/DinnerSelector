@@ -2,6 +2,7 @@ import numpy as np
 import json
 from preprocessing.LSI import LatentConverter, ReviewReader
 from utils.Clustering import Kmeans, KNN
+from utils.Filtering import *
 
 # initialize with a list of places
 lc = LatentConverter('preprocessing/places.json')
@@ -39,6 +40,14 @@ for gNum in k_nearest:
 		else:
 			place_dict[place][0] += score
 			place_dict[place][1] += 1
+
+corpus_path = 'data/place_dict.json'
+reviewContent_path = 'data/review_list.json'
+querys = ['冷氣','涼']
+
+coupus,review_list,places = Load_All_Info(json_path=corpus_path,pickle_path=reviewContent_path)
+
+scoreboard = FilteringAndRanking(querys=querys,places=places,corpus=coupus,review_list=review_list)
 
 # collect places and sort
 def sorting_key(i):
