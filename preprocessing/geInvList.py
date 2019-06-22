@@ -5,7 +5,7 @@ Created on Mon Jun 17 16:14:53 2019
 
 @author: xiaohaoren
 """
-
+import re
 import sys
 sys.path.append("../utils")
 
@@ -18,31 +18,41 @@ from os.path import isfile, join
 
 places_dict = dict()
 inv_list = dict()
-
-review_path = '../data/reviews_guide/'
-
-negative_words = ['不涼','沒','沒有','不','不太','很不']
-
-
+review_list = []
+negative_words = ['不涼','沒','沒有','不','不足','不佳','不太','不行','很不','很差','不好']
+review_path = '../data/reviews_place/'
 cg = CorpusGenerator()
+
 
 files = [join(review_path, f) for f in listdir(review_path) if isfile(join(review_path, f))]
 
 for file in files:
     
-    reviews,places = cg.get_review_content(file)
     
-    for review,place in zip(reviews,places):
+    reviews,reviews_origin = cg.get_placeReview_content(file)
+    a,b = re.search('place=.* coord', file).span()
+    place = file[a+6:b-6]        
+    
+    places_dict[place] = dict()
+    
+    print(place)
+    
+    
+    # for each reivew in reviews of the restaurant
+    for review,review_origin in zip(reviews,reviews_origin):
         
-        # init place in places_dict
-        if place not in places_dict:
-            places_dict[place] = dict()
+        review_list.append(review_origin)
+        review_id = len(review_list)-1
         
         for i,term in enumerate(review):
             
-            # init term in inv_list
-            if term not in inv_list:
-                inv_list[term] = list()
+            # processing places_dict
+            if term not in places_dict[place]:
+                places_dict[place][term]={}
+            if review_id not in places_dict[place][term]:
+                places_dict[place][term][review_id]=0
+            places_dict[place][term][review_id]+=1
+            
             
             # 此字是否為負面詞意?
             if term in negative_words:
@@ -52,31 +62,32 @@ for file in files:
                 
                 # 扣分
                 if i>0:
-                    # 前字
+                    # 前一字
                     pre_term = review[i-1]
-                    places_dict[place][pre_term]-=2
+                    
                     
                 if i<len(review)-1:
-                    # 後字
+                    # 後一字
                     post_term = review[i+1]
                     if post_term not in places_dict[place]:
-                        places_dict[place][post_term]=0
-                    places_dict[place][post_term]-=2
+                        places_dict[place][post_term]={}
+                    if review_id not in places_dict[place][post_term]:
+                        places_dict[place][post_term][review_id]=0
+                    places_dict[place][post_term][review_id]-=2
                     
-                print(pre_term+term+post_term)
+                print(pre_term+term+post_term,'by',review_id)
             
-            # processing places_dict
-            if term not in places_dict[place]:
-                places_dict[place][term]=0
-            places_dict[place][term]+=1
             
             # processing inv_list
+            if term not in inv_list:
+                inv_list[term] = list()
             inv_list[term].append(place)
-            
-            
+    
+
+          
 for term in inv_list.keys():
     inv_list[term] = dict(Counter(inv_list[term]))
-            
+        
             
             
             

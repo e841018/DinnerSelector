@@ -69,6 +69,7 @@ class CorpusGenerator():
             pkg = json.load(f)
 
         reviews_terms = []
+        reviews_origin = []
         for review in pkg:
             content = self.clean(review['content'])
             terms = list(jieba.cut(content))
@@ -76,7 +77,8 @@ class CorpusGenerator():
 
             if len(terms) > 0:
                 reviews_terms.append(terms)
-        return reviews_terms
+                reviews_origin.append(review['content'])
+        return reviews_terms,reviews_origin
     
     
     def gen(self, corpus_path='../data/corpus.txt'):
