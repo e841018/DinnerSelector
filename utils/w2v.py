@@ -4,7 +4,8 @@ import re
 import glob
 import os
 import numpy as np
-import word2vec
+from gensim.models import word2vec
+import logging
 
 class CorpusGenerator():
     def __init__(self, review_folder='../data/reviews_guide/'):
@@ -44,8 +45,8 @@ class CorpusGenerator():
         new_terms = [t for t in terms]
         for t in terms:
             if t in self.stopwords:
-                new_terms.remove(t)
-        return new_terms
+                terms.remove(t)
+        #return new_terms
 
     def get_review_content(self, filename):
         with open(filename, 'r') as f:
@@ -57,14 +58,14 @@ class CorpusGenerator():
             content = self.clean(review['content'])
             place = review['place']
             terms = list(jieba.cut(content))
-            terms = self.remove_stop_words(terms)
+            self.remove_stop_words(terms)
 
-            if len(terms) > 0:
+            if len(terms) > 1:
                 reviews_terms.append(terms)
                 reviews_places.append(place)
         return reviews_terms, reviews_places
-    
-    def get_placeReview_content(self,filename):
+
+    def get_placeReview_content(self, filename):
         with open(filename, 'r') as f:
             pkg = json.load(f)
 
@@ -77,10 +78,16 @@ class CorpusGenerator():
 
             if len(terms) > 0:
                 reviews_terms.append(terms)
+<<<<<<< HEAD
                 reviews_origin.append(review['content'])
         return reviews_terms,reviews_origin
     
     
+=======
+        return reviews_terms
+
+
+>>>>>>> e1579e0c288414963bd44d900eeb47297ab622ed
     def gen(self, corpus_path='../data/corpus.txt'):
         """ Save corpus to file """
         with open(corpus_path, 'w') as f:
@@ -98,28 +105,33 @@ class Word2Vec():
     def __init__(self, gen_corpus=False, train=False, corpus_path='../data/corpus.txt',
             data_folder='../data/reviews_guide/', vec_dim=300, min_count=3):
         # generate corpus file
-        self.cg = CorpusGenerator(review_folder=data_folder)
         if gen_corpus:
+            self.cg = CorpusGenerator(review_folder=data_folder)
             self.cg.gen(corpus_path=corpus_path)
 
         # Train a model to generate embedding(vector) for each vocab
         # A vocab is a word that appears > min_count times in the corpus
         if train:
-            word2vec.word2vec(corpus_path,
-                '../model/corpusWord2Vec.bin', size=vec_dim, min_count=min_count, verbose=True)
-        self.model = word2vec.load('../model/corpusWord2Vec.bin')
+            logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+            sentences = word2vec.LineSentence(corpus_path)
+            model = word2vec.Word2Vec(sentences, sg=1, size=vec_dim, min_count=min_count)
+            model.save('../model/w2v_wiki.model')    
+            
+            # word2vec.word2vec(corpus_path,
+            #     '../model/corpusWord2Vec.bin', size=vec_dim, min_count=min_count, verbose=True)
+        
+        self.model = word2vec.Word2Vec.load('../model/w2v_wiki.model')
+        # self.model = word2vec.load('../model/corpusWord2Vec.bin')
 
     def get_relevant_words(self, query_word):
-        indices, metrices = self.model.similar(query_word)
-        vocabs = [self.model.vocab[i] for i in indices]
-        return vocabs, metrices
+        return self.model.most_similar(query_word)
 
     def get_word_vector(self, query_word):
-        index = np.where(self.model.vocab == query_word)[0]
-        if len(index) == 0:
-            print('[KeyError] Can\'t recognize the query_word')
+        try:
+            return self.model[query_word]
+        except KeyError:
+            print('[KeyError] Can\'t recognize the query word')
             return None
-        return self.model.vectors[index[0]]
 
 import argparse
 
@@ -132,7 +144,7 @@ if __name__ == "__main__":
 
 
     # sample code to get similar words
-    w2v = Word2Vec(gen_corpus=args.gen, train=args.train, corpus_path=args.corpus_p, vec_dim=200)
+    w2v = Word2Vec(gen_corpus=args.gen, train=args.train, corpus_path=args.corpus_p, vec_dim=250)
     words, metrices = w2v.get_relevant_words(u'火鍋')
     print('\n')
     for w, mt in zip(words, metrices):
