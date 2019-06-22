@@ -78,16 +78,9 @@ class CorpusGenerator():
 
             if len(terms) > 0:
                 reviews_terms.append(terms)
-<<<<<<< HEAD
                 reviews_origin.append(review['content'])
         return reviews_terms,reviews_origin
     
-    
-=======
-        return reviews_terms
-
-
->>>>>>> e1579e0c288414963bd44d900eeb47297ab622ed
     def gen(self, corpus_path='../data/corpus.txt'):
         """ Save corpus to file """
         with open(corpus_path, 'w') as f:
