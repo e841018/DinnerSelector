@@ -88,8 +88,8 @@ for file in files:
                         places_dict[place][post_term][review_id]=0
                     places_dict[place][post_term][review_id]-=3
                 
-                if place == '台一牛奶大王' and term == '不':
-                    print(pre_term+term+post_term,'by',review_id)
+                
+                #print(pre_term+term+post_term,'by',review_id)
             
     places_dict[place]['__termNum__'] = termCnt
     places_dict[place]['__reviewNum__'] = reviewCnt
