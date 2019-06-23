@@ -11,8 +11,9 @@ lc = LatentConverter('preprocessing/places.json')
 proj = np.load('preprocessing/proj.npy')
 
 # get latent vector of the query
-# query = lc.get_latent(proj, 'huzixiao.json')
-query = lc.get_latent(proj, 'MVNLab.json')
+query_name = 'MVNLab'
+# query_name = 'huzixiao'
+query = lc.get_latent(proj, query_name+'.json')
 
 # # visualize the first 3 dimensions of place vectors in latent space
 # LatentConverter.visualize(np.load('preprocessing/proj.npy'), dims=(0,1,2))
@@ -41,20 +42,12 @@ for gNum in k_nearest:
 			place_dict[place][0] += score
 			place_dict[place][1] += 1
 
-corpus_path = 'data/place_dict.json'
-reviewContent_path = 'data/review_list.json'
-querys = ['冷氣','涼']
-
-coupus,review_list,places = Load_All_Info(json_path=corpus_path,pickle_path=reviewContent_path)
-
-scoreboard = FilteringAndRanking(querys=querys,places=places,corpus=coupus,review_list=review_list)
-
-# collect places and sort
-def sorting_key(i):
+# collect places and rank for the first time
+def key1(i):
 	review_count = i[1][1]
 	average = i[1][0]/i[1][1]
 	return 0.1*review_count+average
-place_list = sorted(place_dict.items(), key=sorting_key, reverse=True)
+place_list = sorted(place_dict.items(), key=key1, reverse=True)
 print('idx\taverage\tcount\tscore\tplace')
 for i in place_list[:50]:
 	place = i[0]
@@ -63,3 +56,28 @@ for i in place_list[:50]:
 	score = 0.1*review_count+average
 	place_idx = lc.place2idx[i[0]]
 	print(str(place_idx) +'\t'+str(average)[:4] +'\t'+str(0.1*review_count)[:3] +'\t'+str(score)[:4] +'\t'+str(place))
+
+corpus_path = 'data/place_dict.json'
+reviewContent_path = 'data/review_list.json'
+querys = ['冷氣','涼']
+coupus, review_list, places = Load_All_Info(json_path=corpus_path, pickle_path=reviewContent_path)
+scoreboard = FilteringAndRanking(querys=querys, places=places, corpus=coupus, review_list=review_list)
+
+
+candidates = []
+with open(query_name+'.txt', encoding='utf-8') as f:
+	for line in f.readlines()[1:]:
+		line = line.split()
+		c = {}
+		c['idx'] = int(line[0])
+		c['average'] = float(line[1])
+		c['count'] = float(line[2])
+		c['name'] = lc.place_list[c['idx']][0]
+		c['score_keyword'] = scoreboard[c['name']] if c['name'] in scoreboard else 0
+		candidates.append(c)
+
+def key2(c):
+	return c['average']+0.1*c['count']+c['score_keyword']
+candidates.sort(key=key2, reverse=True)
+
+''
