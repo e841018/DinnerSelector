@@ -1,7 +1,7 @@
 import numpy as np
 import json
 from preprocessing.LSI import LatentConverter, ReviewReader
-from utils.Clustering import Kmeans, KNN
+from utils.Clustering import KNN
 from utils.Filtering import *
 from utils.w2v import *
 
@@ -66,7 +66,7 @@ reviewContent_path = 'data/review_list.json'
 keywords = ['便宜', '衛生', '飲料']
 w2v = Word2Vec(model_name='model/w2v_dim-100.model')
 for kwd in keywords:
-    expd_keywords = [kwd] + w2v.get_relevant_words(kwd, topn=6) 
+    expd_keywords = [kwd] + w2v.get_relevant_words(kwd, topn=5) 
     coupus, review_list, places = Load_All_Info(json_path=corpus_path, pickle_path=reviewContent_path)
     scoreboard = FilteringAndRanking(querys=expd_keywords, places=places, corpus=coupus, review_list=review_list)
 
@@ -88,8 +88,11 @@ def key2(c):
 candidates.sort(key=key2, reverse=True)
 
 # print final results
-print('score\tplace')
+print('stars\tcount\tkw\tscore\tplace')
 for c in candidates:
+	stars = 2*c['average']
+	count = 0.1*c['count']
+	score_keyword = c['score_keyword']
 	score = key2(c)
 	name = c['name']
-	print(str(score)[:4] +'\t'+name)
+	print(str(stars)[:4] +'\t'+str(count)[:4] +'\t'+str(score_keyword)[:4] +'\t'+str(score)[:4] +'\t'+name)
