@@ -94,7 +94,7 @@ for file in files:
     places_dict[place]['__termNum__'] = termCnt
     places_dict[place]['__reviewNum__'] = reviewCnt
             
-with open(save_path_corpus, 'w') as fp:
+with open(save_path_corpus, 'w', encoding='utf-8') as fp:
     json.dump(places_dict, fp)       
             
 with open(save_path_list, 'wb') as fp:

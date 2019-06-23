@@ -74,7 +74,7 @@ class CorpusGenerator():
         return reviews_terms
 
     def get_placeReview_content(self, filename):
-        with open(filename, 'r') as f:
+        with open(filename, 'r', encoding='utf-8') as f:
             pkg = json.load(f)
 
         reviews_terms = []

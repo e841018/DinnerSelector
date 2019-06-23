@@ -12,8 +12,8 @@ lc = LatentConverter('preprocessing/places.json')
 proj = np.load('preprocessing/proj.npy')
 
 # get latent vector of the query
-query_name = 'MVNLab'
-# query_name = 'huzixiao'
+# query_name = 'MVNLab'
+query_name = 'huzixiao'
 query = lc.get_latent(proj, query_name+'.json')
 
 # # visualize the first 3 dimensions of place vectors in latent space
@@ -83,7 +83,7 @@ with open(query_name+'.txt', encoding='utf-8') as f:
 		c['name'] = lc.place_list[c['idx']][0]
 		c['score_keyword'] = 0
 		for scoreboard in scoreboards:
-			c['score_keyword'] += scoreboard[c['name']]
+			c['score_keyword'] += scoreboard[c['name']] if c['name'] in scoreboard else 0
 		c['score_keyword'] /= len(scoreboards)
 		candidates.append(c)
 
