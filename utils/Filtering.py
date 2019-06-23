@@ -71,11 +71,11 @@ if __name__ == "__main__":
     
     corpus_path = '../data/place_dict.json'
     reviewContent_path = '../data/review_list.json'
-    querys = ['衛生','髒亂']
+    querys = ['乾淨','衛生']
     
     corpus,review_list,places = Load_All_Info(json_path=corpus_path,pickle_path=reviewContent_path)
     
-    socoreboard = FilteringAndRanking(querys=querys,places=places,corpus=corpus,review_list=review_list)
+    scoreboard = FilteringAndRanking(querys=querys,places=places,corpus=corpus,review_list=review_list)
     
     
     
