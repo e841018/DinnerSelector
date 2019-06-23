@@ -25,6 +25,15 @@ clusters = Kmeans(guides_latent, k_km)
 predicts, k_nearest = KNN(query, guides_latent, k_knn, clusters)
 k_nearest = k_nearest.numpy()
 
+
+# filtering
+corpus_path = 'data/place_dict.json'
+reviewContent_path = 'data/review_list.json'
+querys = ['冷氣','涼']
+coupus,review_list,places = Load_All_Info(json_path=corpus_path,pickle_path=reviewContent_path)
+scoreboard = FilteringAndRanking(querys=querys,places=places,corpus=coupus,review_list=review_list)
+
+
 # get reviews and count
 guides_normalized = np.load('preprocessing/guides_normalized.npy')
 rr = ReviewReader('preprocessing/guides.txt', 'data/reviews_guide')
@@ -40,14 +49,6 @@ for gNum in k_nearest:
 		else:
 			place_dict[place][0] += score
 			place_dict[place][1] += 1
-
-corpus_path = 'data/place_dict.json'
-reviewContent_path = 'data/review_list.json'
-querys = ['冷氣','涼']
-
-coupus,review_list,places = Load_All_Info(json_path=corpus_path,pickle_path=reviewContent_path)
-
-scoreboard = FilteringAndRanking(querys=querys,places=places,corpus=coupus,review_list=review_list)
 
 # collect places and sort
 def sorting_key(i):
