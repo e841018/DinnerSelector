@@ -53,12 +53,13 @@ scoreboard = FilteringAndRanking(querys=querys,places=places,corpus=coupus,revie
 def sorting_key(i):
 	review_count = i[1][1]
 	average = i[1][0]/i[1][1]
-	return review_count+average*0.5
+	return 0.1*review_count+average
 place_list = sorted(place_dict.items(), key=sorting_key, reverse=True)
-print('idx\taverage\tcount\tplace')
-for i in place_list[:30]:
+print('idx\taverage\tcount\tscore\tplace')
+for i in place_list[:50]:
 	place = i[0]
 	review_count = i[1][1]
 	average = i[1][0]/i[1][1]
+	score = 0.1*review_count+average
 	place_idx = lc.place2idx[i[0]]
-	print(str(place_idx) +'\t'+str(average)[:4] +'\t'+str(review_count) +'\t'+str(place))
+	print(str(place_idx) +'\t'+str(average)[:4] +'\t'+str(0.1*review_count)[:3] +'\t'+str(score)[:4] +'\t'+str(place))
