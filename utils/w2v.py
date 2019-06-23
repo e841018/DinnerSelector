@@ -46,8 +46,16 @@ class CorpusGenerator():
         for t in terms_copy:
             if t in self.stopwords:
                 terms.remove(t)
-            if len(t) > 20:
+            if len(t) > 20 or len(t) == 0:
                 terms.remove(t)
+
+    def concat_cp(self, terms):
+        terms_copy = [t for t in terms]
+        for i, t in enumerate(terms_copy):
+            if t.upper() == 'CP':
+                terms[i] = 'CP值'
+            if '值' in t:
+                terms[i] = terms[i].replace('值', '')
 
     def get_review_content(self, filename):
         with open(filename, 'r') as f:
@@ -57,6 +65,7 @@ class CorpusGenerator():
         for review in pkg:
             content = self.clean(review['content'])
             terms = list(jieba.cut(content))
+            self.concat_cp(terms)
             self.remove_stop_words(terms)
 
             # > 1 to filter english
@@ -94,17 +103,19 @@ class Word2Vec():
         @gen_corpus: Generate new corpus from dataset in `data_folder`
         @train: Training a new word2vec model
     """
-    def __init__(self, gen_corpus=False, train=False, model_name=None, vec_dim=100, min_count=3):
+
+    def __init__(self, gen_corpus=False, train=False, corpus_path='../data/corpus.txt',
+         model_name=None, vec_dim=100, min_count=3):
         # generate corpus file
         if gen_corpus:
             self.cg = CorpusGenerator()
-            self.cg.gen(corpus_path='../data/corpus.txt')
+            self.cg.gen(corpus_path=corpus_path)
 
         # Train a model to generate embedding(vector) for each vocab
         # A vocab is a word that appears > min_count times in the corpus
         if train:
             logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-            sentences = word2vec.LineSentence('../data/corpus.txt')
+            sentences = word2vec.LineSentence(corpus_path)
             model = word2vec.Word2Vec(sentences, sg=1, size=vec_dim, min_count=min_count)
             model.save('../model/w2v_{}.model'.format(vec_dim))    
             self.model = word2vec.Word2Vec.load('../model/w2v_{}.model'.format(vec_dim))
@@ -136,15 +147,15 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-t', action='store_true', dest='train', default=False)
     parser.add_argument('-g', action='store_true', dest='gen', default=False)
     parser.add_argument('-p', action='store', dest='corpus_p', default='../data/corpus.txt')
-    parser.add_argument('--model_name', action='store', dest='model_name', default='../model/w2v_dim-100.model')
+    parser.add_argument('-t', action='store_true', dest='train', default=False)
+    parser.add_argument('--model_name', action='store', dest='model_name', default='../model/w2v_100.model')
     args = parser.parse_args()
 
     # sample code to get similar words
-    w2v = Word2Vec(gen_corpus=args.gen, train=args.train, model_name=args.model_name)
-    keywords = ['舒服', '衛生', '飲料', '服務', '便宜', ['冷氣', '很涼']]
+    w2v = Word2Vec(gen_corpus=args.gen, train=args.train, corpus_path=args.corpus_p, model_name=args.model_name)
+    keywords = ['舒服', '衛生', '飲料', '服務', '便宜', '安靜', 'CP值']
     for kwd in keywords:
         print('Keywords: {}'.format(kwd))
         results = w2v.get_relevant_words(kwd, 10, test=True)
