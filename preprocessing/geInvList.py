@@ -19,7 +19,7 @@ from os.path import isfile, join
 
 places_dict = dict()
 review_list = []
-negative_words = ['不涼','沒','沒有','不','不足','不佳','不太','不行','很不','很差','不好']
+inverse_words = ['不涼','沒','沒有','不','不足','不佳','不太','不行','很不','差','很差','不好','有待']
 review_path = '../data/reviews_place/'
 
 save_path_corpus = '../data/place_dict.json'
@@ -37,13 +37,22 @@ for file in files:
     
     places_dict[place] = dict()
     
+    # accumulate count
+    termCnt = 0
+    reviewCnt = 0
+    
     # for each reivew in reviews of the restaurant
     for review,review_origin in zip(reviews,reviews_origin):
         
-        review_list.append(review_origin)
+        reviewCnt += 1
+        review_list.append(review_origin.replace('\n',' '))
         review_id = len(review_list)-1
         
+        
         for i,term in enumerate(review):
+            
+            # accumulate term count
+            termCnt += 1
             
             # processing places_dict
             if term not in places_dict[place]:
@@ -54,7 +63,7 @@ for file in files:
             
             
             # 此字是否為負面詞意?
-            if term in negative_words:
+            if term in inverse_words:
                 
                 pre_term = 'XX'
                 post_term = 'XX'
@@ -74,8 +83,10 @@ for file in files:
                         places_dict[place][post_term][review_id]=0
                     places_dict[place][post_term][review_id]-=2
                     
-                print(pre_term+term+post_term,'by',review_id)
+                #print(pre_term+term+post_term,'by',review_id)
             
+    places_dict[place]['__termNum__'] = termCnt
+    places_dict[place]['__reviewNum__'] = reviewCnt
             
 with open(save_path_corpus, 'w') as fp:
     json.dump(places_dict, fp)       
