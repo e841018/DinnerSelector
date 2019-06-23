@@ -3,6 +3,7 @@ import json
 from preprocessing.LSI import LatentConverter, ReviewReader
 from utils.Clustering import Kmeans, KNN
 from utils.Filtering import *
+from utils.w2v import *
 
 # initialize with a list of places
 lc = LatentConverter('preprocessing/places.json')
@@ -11,8 +12,9 @@ lc = LatentConverter('preprocessing/places.json')
 proj = np.load('preprocessing/proj.npy')
 
 # get latent vector of the query
-# query = lc.get_latent(proj, 'huzixiao.json')
-query = lc.get_latent(proj, 'MVNLab.json')
+query_name = 'MVNLab'
+# query_name = 'huzixiao'
+query = lc.get_latent(proj, query_name+'.json')
 
 # # visualize the first 3 dimensions of place vectors in latent space
 # LatentConverter.visualize(np.load('preprocessing/proj.npy'), dims=(0,1,2))
@@ -41,24 +43,46 @@ for gNum in k_nearest:
 			place_dict[place][0] += score
 			place_dict[place][1] += 1
 
-corpus_path = 'data/place_dict.json'
-reviewContent_path = 'data/review_list.json'
-querys = ['冷氣','涼']
-
-coupus,review_list,places = Load_All_Info(json_path=corpus_path,pickle_path=reviewContent_path)
-
-scoreboard = FilteringAndRanking(querys=querys,places=places,corpus=coupus,review_list=review_list)
-
-# collect places and sort
-def sorting_key(i):
+# collect places and rank for the first time
+def key1(i):
 	review_count = i[1][1]
 	average = i[1][0]/i[1][1]
-	return review_count+average*0.5
-place_list = sorted(place_dict.items(), key=sorting_key, reverse=True)
-print('idx\taverage\tcount\tplace')
-for i in place_list[:30]:
+	return 0.1*review_count+average
+
+place_list = sorted(place_dict.items(), key=key1, reverse=True)
+print('idx\taverage\tcount\tscore\tplace')
+for i in place_list[:60]:
 	place = i[0]
 	review_count = i[1][1]
 	average = i[1][0]/i[1][1]
+	score = 0.1*review_count+average
 	place_idx = lc.place2idx[i[0]]
-	print(str(place_idx) +'\t'+str(average)[:4] +'\t'+str(review_count) +'\t'+str(place))
+	print(str(place_idx) +'\t'+str(average)[:4] +'\t'+str(0.1*review_count)[:3] +'\t'+str(score)[:4] +'\t'+str(place))
+
+corpus_path = 'data/place_dict.json'
+reviewContent_path = 'data/review_list.json'
+keywords = ['便宜', '衛生', '飲料']
+w2v = Word2Vec(model_name='model/w2v_dim-100.model')
+for kwd in keywords:
+    expd_keywords = [kwd] + w2v.get_relevant_words(kwd, topn=6) 
+    coupus, review_list, places = Load_All_Info(json_path=corpus_path, pickle_path=reviewContent_path)
+    scoreboard = FilteringAndRanking(querys=expd_keywords, places=places, corpus=coupus, review_list=review_list)
+
+# 
+candidates = []
+with open(query_name+'.txt', encoding='utf-8') as f:
+	for line in f.readlines()[1:]:
+		line = line.split()
+		c = {}
+		c['idx'] = int(line[0])
+		c['average'] = float(line[1])
+		c['count'] = float(line[2])
+		c['name'] = lc.place_list[c['idx']][0]
+		c['score_keyword'] = scoreboard[c['name']] if c['name'] in scoreboard else 0
+		candidates.append(c)
+
+def key2(c):
+	return 2*c['average']+0.1*c['count']+c['score_keyword']
+candidates.sort(key=key2, reverse=True)
+
+''

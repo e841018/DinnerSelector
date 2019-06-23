@@ -19,7 +19,7 @@ from os.path import isfile, join
 
 places_dict = dict()
 review_list = []
-negative_words = ['不涼','沒','沒有','不','不足','不佳','不太','不行','很不','很差','不好']
+reverse_words = ['不涼','沒','沒有','不','不是','不足','不佳','不太','不行','很不','差','很差','不好','有待','欠佳']
 review_path = '../data/reviews_place/'
 
 save_path_corpus = '../data/place_dict.json'
@@ -37,13 +37,22 @@ for file in files:
     
     places_dict[place] = dict()
     
+    # accumulate count
+    termCnt = 0
+    reviewCnt = 0
+    
     # for each reivew in reviews of the restaurant
     for review,review_origin in zip(reviews,reviews_origin):
         
-        review_list.append(review_origin)
+        reviewCnt += 1
+        review_list.append(review_origin.replace('\n',' '))
         review_id = len(review_list)-1
         
+        
         for i,term in enumerate(review):
+            
+            # accumulate term count
+            termCnt += 1
             
             # processing places_dict
             if term not in places_dict[place]:
@@ -54,7 +63,7 @@ for file in files:
             
             
             # 此字是否為負面詞意?
-            if term in negative_words:
+            if term in reverse_words:
                 
                 pre_term = 'XX'
                 post_term = 'XX'
@@ -63,7 +72,12 @@ for file in files:
                 if i>0:
                     # 前一字
                     pre_term = review[i-1]
-                    places_dict[place][pre_term][review_id]-=2
+                    places_dict[place][pre_term][review_id]-=3
+                    
+                if i>1:
+                    # 前二字
+                    pre_term = review[i-2]
+                    places_dict[place][pre_term][review_id]-=3
                     
                 if i<len(review)-1:
                     # 後一字
@@ -72,10 +86,13 @@ for file in files:
                         places_dict[place][post_term]={}
                     if review_id not in places_dict[place][post_term]:
                         places_dict[place][post_term][review_id]=0
-                    places_dict[place][post_term][review_id]-=2
-                    
-                print(pre_term+term+post_term,'by',review_id)
+                    places_dict[place][post_term][review_id]-=3
+                
+                if place == '台一牛奶大王' and term == '不':
+                    print(pre_term+term+post_term,'by',review_id)
             
+    places_dict[place]['__termNum__'] = termCnt
+    places_dict[place]['__reviewNum__'] = reviewCnt
             
 with open(save_path_corpus, 'w') as fp:
     json.dump(places_dict, fp)       
