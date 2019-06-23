@@ -42,8 +42,11 @@ class CorpusGenerator():
         return self.EMOJI_RE.sub('', content)
 
     def remove_stop_words(self, terms):
-        for t in terms:
+        terms_copy = [t for t in terms]
+        for t in terms_copy:
             if t in self.stopwords:
+                terms.remove(t)
+            if len(t) > 20:
                 terms.remove(t)
 
     def get_review_content(self, filename):
@@ -56,6 +59,7 @@ class CorpusGenerator():
             terms = list(jieba.cut(content))
             self.remove_stop_words(terms)
 
+            # > 1 to filter english
             if len(terms) > 1:
                 reviews_terms.append(terms)
         return reviews_terms
@@ -90,28 +94,27 @@ class Word2Vec():
         @gen_corpus: Generate new corpus from dataset in `data_folder`
         @train: Training a new word2vec model
     """
-    def __init__(self, gen_corpus=False, train=False, corpus_path='../data/corpus.txt', vec_dim=300, min_count=3):
+    def __init__(self, gen_corpus=False, train=False, model_name=None, vec_dim=100, min_count=3):
         # generate corpus file
         if gen_corpus:
             self.cg = CorpusGenerator()
-            self.cg.gen(corpus_path=corpus_path)
+            self.cg.gen(corpus_path='../data/corpus.txt')
 
         # Train a model to generate embedding(vector) for each vocab
         # A vocab is a word that appears > min_count times in the corpus
         if train:
             logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-            sentences = word2vec.LineSentence(corpus_path)
+            sentences = word2vec.LineSentence('../data/corpus.txt')
             model = word2vec.Word2Vec(sentences, sg=1, size=vec_dim, min_count=min_count)
-            model.save('../model/w2v.model')    
-            
-            # word2vec.word2vec(corpus_path,
-            #     '../model/corpusWord2Vec.bin', size=vec_dim, min_count=min_count, verbose=True)
-        
-        self.model = word2vec.Word2Vec.load('../model/w2v.model')
-        # self.model = word2vec.load('../model/corpusWord2Vec.bin')
+            model.save('../model/w2v_{}.model'.format(vec_dim))    
+            self.model = word2vec.Word2Vec.load('../model/w2v_{}.model'.format(vec_dim))
+        else:
+            assert model_name != None
+            self.model = word2vec.Word2Vec.load(model_name)
 
-    def get_relevant_words(self, query_word):
-        return self.model.most_similar(query_word)
+
+    def get_relevant_words(self, query_word, topn=10):
+        return self.model.most_similar(query_word, topn=topn)
 
     def get_word_vector(self, query_word):
         try:
@@ -127,18 +130,15 @@ if __name__ == "__main__":
     parser.add_argument('-t', action='store_true', dest='train', default=False)
     parser.add_argument('-g', action='store_true', dest='gen', default=False)
     parser.add_argument('-p', action='store', dest='corpus_p', default='../data/corpus.txt')
+    parser.add_argument('--model_name', action='store', dest='model_name', default='../model/w2v_dim-100.model')
     args = parser.parse_args()
 
     # sample code to get similar words
-    w2v = Word2Vec(gen_corpus=args.gen, train=args.train, corpus_path=args.corpus_p, vec_dim=250)
-    keywords = ['衛生', '飲料', '服務', 'cp', '熱']
+    w2v = Word2Vec(gen_corpus=args.gen, train=args.train, model_name=args.model_name)
+    keywords = ['舒服', '衛生', '飲料', '服務', '便宜', '冷氣']
     for kwd in keywords:
-        print('Processing {}'.format(kwd))
-        results = w2v.get_relevant_words(kwd)
-        print('\n')
+        print('Keywords: {}'.format(kwd))
+        results = w2v.get_relevant_words(kwd, 10)
         for w, mt in results:
             print(w, mt)
-
-    # sample code to acquire word embedding
-    drinks_vec = w2v.get_word_vector('飲料')
-    print('飲料\'s vector dim1~10: ', drinks_vec[:10])
+        print('------------------')
