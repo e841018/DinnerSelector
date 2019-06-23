@@ -26,15 +26,6 @@ clusters = Kmeans(guides_latent, k_km)
 predicts, k_nearest = KNN(query, guides_latent, k_knn, clusters)
 k_nearest = k_nearest.numpy()
 
-
-# filtering
-corpus_path = 'data/place_dict.json'
-reviewContent_path = 'data/review_list.json'
-querys = ['冷氣','涼']
-coupus,review_list,places = Load_All_Info(json_path=corpus_path,pickle_path=reviewContent_path)
-scoreboard = FilteringAndRanking(querys=querys,places=places,corpus=coupus,review_list=review_list)
-
-
 # get reviews and count
 guides_normalized = np.load('preprocessing/guides_normalized.npy')
 rr = ReviewReader('preprocessing/guides.txt', 'data/reviews_guide')
@@ -58,7 +49,7 @@ def key1(i):
 	return 0.1*review_count+average
 place_list = sorted(place_dict.items(), key=key1, reverse=True)
 print('idx\taverage\tcount\tscore\tplace')
-for i in place_list[:50]:
+for i in place_list[:60]:
 	place = i[0]
 	review_count = i[1][1]
 	average = i[1][0]/i[1][1]
@@ -68,11 +59,11 @@ for i in place_list[:50]:
 
 corpus_path = 'data/place_dict.json'
 reviewContent_path = 'data/review_list.json'
-querys = ['冷氣','涼']
+querys = ['湯頭']
 coupus, review_list, places = Load_All_Info(json_path=corpus_path, pickle_path=reviewContent_path)
 scoreboard = FilteringAndRanking(querys=querys, places=places, corpus=coupus, review_list=review_list)
 
-
+# 
 candidates = []
 with open(query_name+'.txt', encoding='utf-8') as f:
 	for line in f.readlines()[1:]:
@@ -86,7 +77,7 @@ with open(query_name+'.txt', encoding='utf-8') as f:
 		candidates.append(c)
 
 def key2(c):
-	return c['average']+0.1*c['count']+c['score_keyword']
+	return 2*c['average']+0.1*c['count']+c['score_keyword']
 candidates.sort(key=key2, reverse=True)
 
 ''
