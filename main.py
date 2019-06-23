@@ -3,6 +3,7 @@ import json
 from preprocessing.LSI import LatentConverter, ReviewReader
 from utils.Clustering import Kmeans, KNN
 from utils.Filtering import *
+from utils.w2v import *
 
 # initialize with a list of places
 lc = LatentConverter('preprocessing/places.json')
@@ -47,6 +48,7 @@ def key1(i):
 	review_count = i[1][1]
 	average = i[1][0]/i[1][1]
 	return 0.1*review_count+average
+
 place_list = sorted(place_dict.items(), key=key1, reverse=True)
 print('idx\taverage\tcount\tscore\tplace')
 for i in place_list[:60]:
@@ -59,9 +61,12 @@ for i in place_list[:60]:
 
 corpus_path = 'data/place_dict.json'
 reviewContent_path = 'data/review_list.json'
-querys = ['湯頭']
-coupus, review_list, places = Load_All_Info(json_path=corpus_path, pickle_path=reviewContent_path)
-scoreboard = FilteringAndRanking(querys=querys, places=places, corpus=coupus, review_list=review_list)
+keywords = ['便宜', '衛生', '飲料']
+w2v = Word2Vec(model_name='../model/w2v_dim-100.model')
+for kwd in keywords:
+    expd_keywords = w2v.get_relevant_words(kwd, topn=6)
+    coupus, review_list, places = Load_All_Info(json_path=corpus_path, pickle_path=reviewContent_path)
+    scoreboard = FilteringAndRanking(querys=expd_keywords, places=places, corpus=coupus, review_list=review_list)
 
 # 
 candidates = []
