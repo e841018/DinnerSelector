@@ -64,7 +64,7 @@ reviewContent_path = 'data/review_list.json'
 keywords = ['便宜', '衛生', '飲料']
 w2v = Word2Vec(model_name='model/w2v_dim-100.model')
 for kwd in keywords:
-    expd_keywords = w2v.get_relevant_words(kwd, topn=6)
+    expd_keywords = [kwd] + w2v.get_relevant_words(kwd, topn=6) 
     coupus, review_list, places = Load_All_Info(json_path=corpus_path, pickle_path=reviewContent_path)
     scoreboard = FilteringAndRanking(querys=expd_keywords, places=places, corpus=coupus, review_list=review_list)
 
