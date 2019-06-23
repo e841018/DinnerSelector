@@ -60,7 +60,7 @@ def FilteringAndRanking(querys,places,corpus,review_list=None):
                     
             scoreboard[place] += term_score
             
-        scoreboard[place] = scoreboard[place]/N * 1000
+        scoreboard[place] = scoreboard[place]/(N*len(querys)) * 100
         
         
         
