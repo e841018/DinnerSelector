@@ -19,7 +19,7 @@ from os.path import isfile, join
 
 places_dict = dict()
 review_list = []
-inverse_words = ['不涼','沒','沒有','不','不足','不佳','不太','不行','很不','差','很差','不好','有待']
+reverse_words = ['不涼','沒','沒有','不','不足','不佳','不太','不行','很不','差','很差','不好','有待']
 review_path = '../data/reviews_place/'
 
 save_path_corpus = '../data/place_dict.json'
@@ -62,8 +62,8 @@ for file in files:
             places_dict[place][term][review_id]+=1
             
             
-            # 此字是否為負面詞意?
-            if term in inverse_words:
+            # 此字是否為反轉詞?
+            if term in reverse_words:
                 
                 pre_term = 'XX'
                 post_term = 'XX'

@@ -8,6 +8,7 @@ Created on Sat Jun 22 16:48:54 2019
 
 import json
 import pickle
+import numpy as np
 
 negative_word = ['悶熱','吵雜','髒','髒亂','加強','改進','缺點']
 
