@@ -20,11 +20,9 @@ query = lc.get_latent(proj, query_name+'.json')
 # LatentConverter.visualize(np.load('preprocessing/proj.npy'), dims=(0,1,2))
 
 # get the nearest guides to the query
-k_km = 1
 k_knn = 30
 guides_latent = np.load('preprocessing/guides_latent.npy').transpose()
-clusters = Kmeans(guides_latent, k_km)
-predicts, k_nearest = KNN(query, guides_latent, k_knn, clusters)
+predicts, k_nearest = KNN(query, guides_latent, k_knn)
 k_nearest = k_nearest.numpy()
 
 # get reviews and count
@@ -43,32 +41,26 @@ for gNum in k_nearest:
 			place_dict[place][0] += score
 			place_dict[place][1] += 1
 
-# collect places and rank for the first time
+# collect places and rank roughly
 def key1(i):
 	review_count = i[1][1]
 	average = i[1][0]/i[1][1]
 	return 0.1*review_count+average
-
 place_list = sorted(place_dict.items(), key=key1, reverse=True)
-print('idx\taverage\tcount\tscore\tplace')
-for i in place_list[:60]:
-	place = i[0]
-	review_count = i[1][1]
-	average = i[1][0]/i[1][1]
-	score = 0.1*review_count+average
-	place_idx = lc.place2idx[i[0]]
-	print(str(place_idx) +'\t'+str(average)[:4] +'\t'+str(0.1*review_count)[:3] +'\t'+str(score)[:4] +'\t'+str(place))
 
-corpus_path = 'data/place_dict.json'
-reviewContent_path = 'data/review_list.json'
-keywords = ['便宜', '衛生', '飲料']
-w2v = Word2Vec(model_name='model/w2v_dim-100.model')
-for kwd in keywords:
-    expd_keywords = [kwd] + w2v.get_relevant_words(kwd, topn=6) 
-    coupus, review_list, places = Load_All_Info(json_path=corpus_path, pickle_path=reviewContent_path)
-    scoreboard = FilteringAndRanking(querys=expd_keywords, places=places, corpus=coupus, review_list=review_list)
+# print roughly
+# print('idx\taverage\tcount\tscore\tplace')
+# for i in place_list[:60]:
+# 	place = i[0]
+# 	review_count = i[1][1]
+# 	average = i[1][0]/i[1][1]
+# 	score = 0.1*review_count+average
+# 	place_idx = lc.place2idx[i[0]]
+# 	print(str(place_idx) +'\t'+str(average)[:4] +'\t'+str(0.1*review_count)[:3] +'\t'+str(score)[:4] +'\t'+str(place))
 
-# 
+# [pick the first 30 non-restaurants places from place_list] (done by hand)
+
+# first 30 non-restaurants places from place_list
 candidates = []
 with open(query_name+'.txt', encoding='utf-8') as f:
 	for line in f.readlines()[1:]:
@@ -81,8 +73,23 @@ with open(query_name+'.txt', encoding='utf-8') as f:
 		c['score_keyword'] = scoreboard[c['name']] if c['name'] in scoreboard else 0
 		candidates.append(c)
 
+# get keyword_score
+corpus_path = 'data/place_dict.json'
+reviewContent_path = 'data/review_list.json'
+keywords = ['便宜', '衛生', '飲料']
+w2v = Word2Vec(model_name='model/w2v_dim-100.model')
+for kwd in keywords:
+    expd_keywords = [kwd] + w2v.get_relevant_words(kwd, topn=6) 
+    coupus, review_list, places = Load_All_Info(json_path=corpus_path, pickle_path=reviewContent_path)
+    scoreboard = FilteringAndRanking(querys=expd_keywords, places=places, corpus=coupus, review_list=review_list)
+
 def key2(c):
 	return 2*c['average']+0.1*c['count']+c['score_keyword']
 candidates.sort(key=key2, reverse=True)
 
-''
+# print final results
+print('score\tplace')
+for c in candidates:
+	score = key2(c)
+	name = c['name']
+	print(str(score)[:4] +'\t'+name)
