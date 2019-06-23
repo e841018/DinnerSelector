@@ -112,13 +112,18 @@ class Word2Vec():
             assert model_name != None
             self.model = word2vec.Word2Vec.load(model_name)
 
-    def get_relevant_words(self, query_word, topn=10):
+    def get_relevant_words(self, query_word, topn=10, test=False):
         try:
             reg = self.model[query_word]
         except KeyError:
             print('[KeyError] Can\'t recognize the query word')
             return None
-        return self.model.most_similar(query_word, topn=topn)
+
+        result = self.model.most_similar(query_word, topn=topn)
+        if test:
+            return result
+        else:
+            return [w for w, _ in result]
 
     def get_word_vector(self, query_word):
         try:
@@ -142,7 +147,7 @@ if __name__ == "__main__":
     keywords = ['舒服', '衛生', '飲料', '服務', '便宜', ['冷氣', '很涼']]
     for kwd in keywords:
         print('Keywords: {}'.format(kwd))
-        results = w2v.get_relevant_words(kwd, 10)
+        results = w2v.get_relevant_words(kwd, 10, test=True)
         if results != None:
             for w, mt in results:
                 print(w, mt)
