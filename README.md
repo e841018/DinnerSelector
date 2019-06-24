@@ -1,5 +1,7 @@
 # DinnerSelector
 
+This is a final project of Web Retrieval and Mining, Spring 2019
+
 ## Usage
 
 ### crawler/get_guides.js
@@ -82,3 +84,9 @@ data structure of `reviews_place length=<list.length> place=<name>.json`:
 
 ## Git Branch
 * https://hackmd.io/i0CooTWuSCi_Wc0d9wNB4A
+
+## For VS Code users
+* You may want to add this in `/.vscode/launch.json`
+```
+"cwd": "${fileDirname}"
+```
