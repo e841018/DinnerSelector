@@ -65,11 +65,13 @@ corpus_path = 'data/place_dict.json'
 reviewContent_path = 'data/review_list.json'
 keywords = ['便宜', '衛生', '飲料']
 w2v = Word2Vec(model_name='model/w2v_dim-100.model')
-scoreboards = []
+expd_keywords = []
 for kwd in keywords:
-    expd_keywords = [kwd] + w2v.get_relevant_words(kwd, topn=5)
-    coupus, review_list, places = Load_All_Info(json_path=corpus_path, pickle_path=reviewContent_path)
-    scoreboards.append(FilteringAndRanking(querys=expd_keywords, places=places, corpus=coupus, review_list=review_list))
+    expd_keywords += w2v.get_relevant_words(kwd, topn=5)
+coupus, review_list, places = Load_All_Info(json_path=corpus_path, pickle_path=reviewContent_path)
+scoreboard = FilteringAndRanking(querys=expd_keywords, places=places, corpus=coupus)#, review_list=review_list)
+print('keywords:', keywords)
+print('expanded:', expd_keywords)
 
 # first 30 non-restaurants places from place_list
 candidates = []
@@ -81,10 +83,7 @@ with open(query_name+'.txt', encoding='utf-8') as f:
 		c['average'] = float(line[1])
 		c['count'] = float(line[2])
 		c['name'] = lc.place_list[c['idx']][0]
-		c['score_keyword'] = 0
-		for scoreboard in scoreboards:
-			c['score_keyword'] += scoreboard[c['name']] if c['name'] in scoreboard else 0
-		c['score_keyword'] /= len(scoreboards)
+		c['score_keyword'] = scoreboard[c['name']] if c['name'] in scoreboard else 0
 		candidates.append(c)
 
 def key2(c):
