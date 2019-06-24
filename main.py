@@ -13,7 +13,7 @@ proj = np.load('preprocessing/proj.npy')
 
 # get latent vector of the query
 # query_name = 'MVNLab'
-query_name = 'huzixiao'
+query_name = 'hsun'
 query = lc.get_latent(proj, query_name+'.json')
 
 # # visualize the first 3 dimensions of place vectors in latent space
@@ -48,7 +48,7 @@ def key1(i):
 	return 0.1*review_count+average
 place_list = sorted(place_dict.items(), key=key1, reverse=True)
 
-# print roughly
+# # print roughly
 # print('idx\taverage\tcount\tscore\tplace')
 # for i in place_list[:60]:
 # 	place = i[0]
@@ -63,11 +63,11 @@ place_list = sorted(place_dict.items(), key=key1, reverse=True)
 # get keyword_score
 corpus_path = 'data/place_dict.json'
 reviewContent_path = 'data/review_list.json'
-keywords = ['便宜', '衛生', '飲料']
+keywords = ['乾淨']
 w2v = Word2Vec(model_name='model/w2v_100.model')
 expd_keywords = []
 for kwd in keywords:
-    expd_keywords += w2v.get_relevant_words(kwd, topn=5)
+    expd_keywords += w2v.get_relevant_words(kwd, topn=5)+[kwd]
 coupus, review_list, places = Load_All_Info(json_path=corpus_path, pickle_path=reviewContent_path)
 scoreboard = FilteringAndRanking(querys=expd_keywords, places=places, corpus=coupus)#, review_list=review_list)
 print('keywords:', keywords)

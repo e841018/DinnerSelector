@@ -12,7 +12,7 @@ var download = function(data, filename){
 // collect data
 var collect_data = function(frame){
 	var data = [];
-	var reviewList = frame.querySelectorAll('div.section-listbox > div.section-review > div > div.section-review-content > div.section-review-line > div');
+	var reviewList = frame.querySelectorAll('div.section-listbox > div.section-review > div > div.section-review-content');
 	reviewList.forEach((item) => {
 		try{
 			var review = {};
