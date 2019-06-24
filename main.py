@@ -64,7 +64,7 @@ place_list = sorted(place_dict.items(), key=key1, reverse=True)
 corpus_path = 'data/place_dict.json'
 reviewContent_path = 'data/review_list.json'
 keywords = ['便宜', '衛生', '飲料']
-w2v = Word2Vec(model_name='model/w2v_dim-100.model')
+w2v = Word2Vec(model_name='model/w2v_100.model')
 expd_keywords = []
 for kwd in keywords:
     expd_keywords += w2v.get_relevant_words(kwd, topn=5)
